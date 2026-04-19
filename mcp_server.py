@@ -73,7 +73,7 @@ def web_search(query: str, max_results: int = 5) -> list[SearchResult]:
             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         },
     )
-    with urlopen(req, timeout=15) as resp:
+    with urlopen(req, timeout=10) as resp:
         body = resp.read().decode("utf-8", errors="replace")
     return parse_duckduckgo_results(body, max_results=max_results)
 
@@ -142,9 +142,13 @@ def handle_request(payload: dict[str, Any]) -> dict[str, Any]:
             return _jsonrpc_error(msg_id, -32602, f"unknown tool: {name}")
 
         try:
+            try:
+                max_results = int(args.get("max_results", 5))
+            except (ValueError, TypeError) as exc:
+                raise ValueError("max_results must be a valid integer") from exc
             results = web_search(
                 query=str(args.get("query", "")),
-                max_results=int(args.get("max_results", 5)),
+                max_results=max_results,
             )
         except (ValueError, TypeError) as exc:
             return _jsonrpc_error(msg_id, -32602, f"invalid arguments: {exc}")
@@ -161,7 +165,6 @@ def handle_request(payload: dict[str, Any]) -> dict[str, Any]:
                         "text": json.dumps(data, ensure_ascii=False, indent=2),
                     }
                 ],
-                "structuredContent": {"results": data},
                 "isError": False,
             },
         )
@@ -181,7 +184,10 @@ def _read_message() -> dict[str, Any] | None:
             break
         header = line.decode("utf-8", errors="replace").strip()
         if header.lower().startswith("content-length:"):
-            content_length = int(header.split(":", 1)[1].strip())
+            try:
+                content_length = int(header.split(":", 1)[1].strip())
+            except ValueError as exc:
+                raise ValueError("Invalid Content-Length header value") from exc
 
     if content_length is None:
         return None
@@ -202,7 +208,11 @@ def _write_message(payload: dict[str, Any]) -> None:
 
 def main() -> int:
     while True:
-        msg = _read_message()
+        try:
+            msg = _read_message()
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr, flush=True)
+            continue
         if msg is None:
             return 0
         response = handle_request(msg)

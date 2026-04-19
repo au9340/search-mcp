@@ -9,7 +9,7 @@ class ParseSearchResultsTest(unittest.TestCase):
         <a class="result__a" href="https://example.com/a">A title</a>
         <div class="result__snippet">A snippet</div>
         <a class="result__a" href="/l/?uddg=https%3A%2F%2Fexample.com%2Fb">B title</a>
-        <a class="result__snippet">B snippet</a>
+        <a class="result__snippet" href="https://example.com/b">B snippet</a>
         '''
         results = parse_duckduckgo_results(html, max_results=2)
         self.assertEqual(len(results), 2)
