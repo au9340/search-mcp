@@ -15,7 +15,9 @@ class ParseSearchResultsTest(unittest.TestCase):
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0].title, "A title")
         self.assertEqual(results[0].url, "https://example.com/a")
+        self.assertEqual(results[0].snippet, "A snippet")
         self.assertEqual(results[1].url, "https://example.com/b")
+        self.assertEqual(results[1].snippet, "B snippet")
 
     def test_extract_real_url_handles_protocol_relative(self):
         self.assertEqual(_extract_real_url("//example.com"), "https://example.com")

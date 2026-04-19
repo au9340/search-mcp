@@ -5,6 +5,7 @@ import re
 import sys
 from dataclasses import dataclass
 from typing import Any
+from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, quote_plus, unquote, urlparse
 from urllib.request import Request, urlopen
 
@@ -145,7 +146,9 @@ def handle_request(payload: dict[str, Any]) -> dict[str, Any]:
                 query=str(args.get("query", "")),
                 max_results=int(args.get("max_results", 5)),
             )
-        except Exception as exc:  # network + input errors
+        except (ValueError, TypeError) as exc:
+            return _jsonrpc_error(msg_id, -32602, f"invalid arguments: {exc}")
+        except (URLError, HTTPError) as exc:
             return _jsonrpc_error(msg_id, -32000, f"search failed: {exc}")
 
         data = [r.__dict__ for r in results]

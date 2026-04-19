@@ -5,7 +5,7 @@
 ## 运行
 
 ```bash
-python /home/runner/work/search-mcp/search-mcp/mcp_server.py
+python mcp_server.py
 ```
 
 ## 工具
@@ -19,6 +19,5 @@ python /home/runner/work/search-mcp/search-mcp/mcp_server.py
 ## 测试
 
 ```bash
-cd /home/runner/work/search-mcp/search-mcp
 python -m unittest discover -s tests -p 'test_*.py'
 ```
