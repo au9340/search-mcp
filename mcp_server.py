@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, quote_plus, unquote, urlparse
 from urllib.request import Request, urlopen
 
 TOOL_NAME = "web_search"
+USER_AGENT = "Mozilla/5.0 (compatible; search-mcp/1.0)"
 
 
 @dataclass
@@ -71,7 +72,7 @@ def web_search(query: str, max_results: int = 5) -> list[SearchResult]:
     req = Request(
         url,
         headers={
-            "User-Agent": "Mozilla/5.0 (compatible; search-mcp/1.0)",
+            "User-Agent": USER_AGENT,
             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         },
     )

@@ -16,6 +16,7 @@ class ParseSearchResultsTest(unittest.TestCase):
         self.assertEqual(results[0].title, "A title")
         self.assertEqual(results[0].url, "https://example.com/a")
         self.assertEqual(results[0].snippet, "A snippet")
+        self.assertEqual(results[1].title, "B title")
         self.assertEqual(results[1].url, "https://example.com/b")
         self.assertEqual(results[1].snippet, "B snippet")
 
