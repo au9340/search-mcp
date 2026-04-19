@@ -63,7 +63,9 @@ def parse_duckduckgo_results(html_text: str, max_results: int) -> list[SearchRes
 def web_search(query: str, max_results: int = 5) -> list[SearchResult]:
     if not query or not query.strip():
         raise ValueError("query is required")
-    max_results = max(1, min(int(max_results), 10))
+    if not isinstance(max_results, int):
+        raise ValueError("max_results must be an integer")
+    max_results = max(1, min(max_results, 10))
 
     url = f"https://duckduckgo.com/html/?q={quote_plus(query)}"
     req = Request(
@@ -184,10 +186,11 @@ def _read_message() -> dict[str, Any] | None:
             break
         header = line.decode("utf-8", errors="replace").strip()
         if header.lower().startswith("content-length:"):
+            raw_value = header.split(":", 1)[1].strip()
             try:
-                content_length = int(header.split(":", 1)[1].strip())
+                content_length = int(raw_value)
             except ValueError as exc:
-                raise ValueError("Invalid Content-Length header value") from exc
+                raise ValueError(f"Invalid Content-Length header value: {raw_value}") from exc
 
     if content_length is None:
         return None
